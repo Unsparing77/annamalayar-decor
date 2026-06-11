@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // --- DYNAMIC IMAGE GALLERY GENERATOR ---
 function generateGalleryImages() {
   // Change this number whenever you upload new photos to your folder!
-  const totalImages = 16; 
+  const totalImages = 9; 
 
   const galleryContainer = document.getElementById('gallerySlider');
 
@@ -73,15 +73,13 @@ window.openLightbox = function(src) {
   const lightboxImg = document.getElementById('lightboxImg');
   if (lightbox && lightboxImg) {
     lightboxImg.src = src;
-    lightbox.classList.add('active'); // Adds an active class to show it
-    lightbox.style.display = "flex";  // Backup layout display toggle
+    lightbox.style.display = "flex"; // Overrides display: none from CSS
   }
 }
 
 window.closeLightbox = function() {
   const lightbox = document.getElementById('lightbox');
   if (lightbox) {
-    lightbox.classList.remove('active');
-    lightbox.style.display = "none";
+    lightbox.style.display = "none"; // Hides it again
   }
 }
