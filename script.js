@@ -3,6 +3,10 @@ let autoScroll;
 let scrollAmount = 0;
 
 document.addEventListener("DOMContentLoaded", () => {
+  // 1. First, generate the images dynamically into the slider
+  generateGalleryImages();
+
+  // 2. Now find the slider (which now has the images inside it!)
   slider = document.getElementById("gallerySlider");
   if (!slider) return;
 
@@ -11,6 +15,35 @@ document.addEventListener("DOMContentLoaded", () => {
   slider.addEventListener("mouseenter", stopAutoScroll);
   slider.addEventListener("mouseleave", startAutoScroll);
 });
+
+// --- DYNAMIC IMAGE GALLERY GENERATOR ---
+function generateGalleryImages() {
+  // Change this number whenever you upload new photos!
+  const totalImages = 9; 
+
+  // We look for "gallerySlider" so it injects right into your slider carousel
+  const galleryContainer = document.getElementById('gallerySlider');
+
+  if (galleryContainer) {
+    for (let i = 1; i <= totalImages; i++) {
+      const img = document.createElement('img');
+      img.src = `images/gallery${i}.jpeg`;
+      img.alt = `Gallery Image ${i}`;
+      
+      // Fixed: Lightbox trigger
+      img.onclick = function() {
+        if (typeof openLightbox === "function") {
+          openLightbox(this.src);
+        } else {
+          // If your lightbox function is in another file, this will still trigger it
+          window.openLightbox ? window.openLightbox(this.src) : console.log("Lightbox function missing");
+        }
+      };
+      
+      galleryContainer.appendChild(img);
+    }
+  }
+}
 
 function startAutoScroll() {
   stopAutoScroll();
@@ -38,37 +71,3 @@ function scrollLeft() {
 function scrollRight() {
   slider.scrollBy({ left: 300, behavior: "smooth" });
 }
-
-/* Lightbox */
-// --- DYNAMIC IMAGE GALLERY GENERATOR ---
-document.addEventListener("DOMContentLoaded", () => {
-    // 1. Update this number whenever you upload new photos to your folder
-    const totalImages = 9; 
-
-    // 2. Select your gallery container element
-    const galleryContainer = document.getElementById('image-gallery');
-
-    // Only run if the gallery container exists on the current page
-    if (galleryContainer) {
-        for (let i = 1; i <= totalImages; i++) {
-            // Create image element
-            const img = document.createElement('img');
-            
-            // Set source and alt text dynamically
-            img.src = `images/gallery${i}.jpeg`;
-            img.alt = `Gallery Image ${i}`;
-            
-            // Bind the lightbox trigger to your existing openLightbox function
-            img.onclick = function() {
-                if (typeof openLightbox === "function") {
-                    openLightbox(this.src);
-                } else {
-                    console.error("openLightbox function is not defined in script.js");
-                }
-            };
-            
-            // Inject the image into your gallery wrapper
-            galleryContainer.appendChild(img);
-        }
-    }
-});
