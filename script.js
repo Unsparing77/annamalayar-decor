@@ -1,81 +1,71 @@
-let slider;
-let autoScroll;
-let scrollAmount = 0;
-
 document.addEventListener("DOMContentLoaded", () => {
-  // 1. Generate the images instantly
-  generateGalleryImages();
+  // CONFIGURATION ENGINE
+  // Change this number whenever you dump new photos into your directory!
+  const TOTAL_GALLERY_IMAGES = 16; 
 
-  // 2. Setup the slider references
-  slider = document.getElementById("gallerySlider");
-  if (!slider) return;
-
-  // Start the autoscroller
-  startAutoScroll();
-
-  slider.addEventListener("mouseenter", stopAutoScroll);
-  slider.addEventListener("mouseleave", startAutoScroll);
+  // Initialize Elements
+  renderDynamicBentoGrid(TOTAL_GALLERY_IMAGES);
+  initializeLightboxEngine();
 });
 
-// --- GENERATE IMAGES USING INNERHTML (BULLETPROOF METHOD) ---
-function generateGalleryImages() {
-  const totalImages = 16; // Change this number when adding images!
-  const galleryContainer = document.getElementById('gallerySlider');
+/**
+ * Generates the clean Bento Masonry Layout dynamically
+ */
+function renderDynamicBentoGrid(total) {
+  const bentoContainer = document.getElementById("dynamicBentoGrid");
+  if (!bentoContainer) return;
 
-  if (galleryContainer) {
-    let htmlContent = "";
-    
-    // Loop and build a big string of HTML image tags
-    for (let i = 1; i <= totalImages; i++) {
-      htmlContent += `<img src="images/gallery${i}.jpeg" alt="Annamalayar Decors Gallery ${i}" onclick="openLightbox(this.src)">`;
+  let compiledHtml = "";
+
+  for (let i = 1; i <= total; i++) {
+    compiledHtml += `
+      <div class="bento-item" data-src="images/gallery${i}.jpeg">
+        <img src="images/gallery${i}.jpeg" alt="Annamalayar Decors Showcase ${i}" loading="lazy">
+        <div class="bento-overlay">
+          <div class="bento-info">
+            <h4>Signature Creation ${i}</h4>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  bentoContainer.innerHTML = compiledHtml;
+}
+
+/**
+ * Initializes full-screen image portal logic using event delegation
+ */
+function initializeLightboxEngine() {
+  const bentoContainer = document.getElementById("dynamicBentoGrid");
+  const lightboxPortal = document.getElementById("portalLightbox");
+  const portalActiveImg = document.getElementById("portalActiveImg");
+  const portalCloseBtn = document.getElementById("portalCloseBtn");
+
+  if (!bentoContainer || !lightboxPortal || !portalActiveImg) return;
+
+  // Listen globally inside the container grid for click actions
+  bentoContainer.addEventListener("click", (event) => {
+    const clickedItem = event.target.closest(".bento-item");
+    if (!clickedItem) return;
+
+    const highResSource = clickedItem.getAttribute("data-src");
+    if (highResSource) {
+      portalActiveImg.src = highResSource;
+      lightboxPortal.classList.add("active");
+      document.body.style.overflow = "hidden"; // Locks backpage scroll
     }
-    
-    // Drop them straight into the container
-    galleryContainer.innerHTML = htmlContent;
-  }
-}
+  });
 
-// --- AUTO SCROLL LOGIC ---
-function startAutoScroll() {
-  stopAutoScroll();
-  autoScroll = setInterval(() => {
-    scrollAmount += 300;
-    if (scrollAmount >= slider.scrollWidth - slider.clientWidth) {
-      scrollAmount = 0;
-    }
-    slider.scrollTo({
-      left: scrollAmount,
-      behavior: "smooth"
-    });
-  }, 3000);
-}
+  // Close Event Handler Function
+  const closePortal = () => {
+    lightboxPortal.classList.remove("active");
+    document.body.style.overflow = ""; // Restores normal viewport scroll
+    portalActiveImg.src = ""; // Clears asset pipelines
+  };
 
-function stopAutoScroll() {
-  if (autoScroll) clearInterval(autoScroll);
-}
-
-// --- GLOBAL NAVIGATION ARROWS ---
-window.scrollLeft = function() {
-  if (slider) slider.scrollBy({ left: -300, behavior: "smooth" });
-}
-
-window.scrollRight = function() {
-  if (slider) slider.scrollBy({ left: 300, behavior: "smooth" });
-}
-
-// --- LIGHTBOX SHOW / HIDE ---
-window.openLightbox = function(src) {
-  const lightbox = document.getElementById('lightbox');
-  const lightboxImg = document.getElementById('lightboxImg');
-  if (lightbox && lightboxImg) {
-    lightboxImg.src = src;
-    lightbox.style.setProperty('display', 'flex', 'important'); // Forces display over any CSS conflict
-  }
-}
-
-window.closeLightbox = function() {
-  const lightbox = document.getElementById('lightbox');
-  if (lightbox) {
-    lightbox.style.setProperty('display', 'none', 'important');
-  }
+  if (portalCloseBtn) portalCloseBtn.addEventListener("click", closePortal);
+  lightboxPortal.addEventListener("click", (e) => {
+    if (e.target === lightboxPortal) closePortal();
+  });
 }
