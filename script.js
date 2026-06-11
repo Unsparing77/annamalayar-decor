@@ -40,34 +40,35 @@ function scrollRight() {
 }
 
 /* Lightbox */
-function openLightbox(src) {
-  document.getElementById("lightboxImg").src = src;
-  document.getElementById("lightbox").style.display = "flex";
-}
+// --- DYNAMIC IMAGE GALLERY GENERATOR ---
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. Update this number whenever you upload new photos to your folder
+    const totalImages = 9; 
 
-function closeLightbox() {
-  document.getElementById("lightbox").style.display = "none";
-}
+    // 2. Select your gallery container element
+    const galleryContainer = document.getElementById('image-gallery');
 
-// 1. Tell the script how many images you currently have
-const totalImages = 16; // Change this number whenever you add new photos!
-
-// 2. Find the gallery container in your HTML
-const galleryContainer = document.getElementById('image-gallery');
-
-// 3. Loop through and generate the HTML automatically
-for (let i = 1; i <= totalImages; i++) {
-    // Create the image element
-    const img = document.createElement('img');
-    
-    // Set the source (e.g., "images/gallery1.jpeg")
-    img.src = `images/gallery${i}.jpeg`;
-    
-    // Add your lightbox click event
-    img.onclick = function() {
-        openLightbox(this.src);
-    };
-    
-    // Append the image to your gallery div
-    galleryContainer.appendChild(img);
-}
+    // Only run if the gallery container exists on the current page
+    if (galleryContainer) {
+        for (let i = 1; i <= totalImages; i++) {
+            // Create image element
+            const img = document.createElement('img');
+            
+            // Set source and alt text dynamically
+            img.src = `images/gallery${i}.jpeg`;
+            img.alt = `Gallery Image ${i}`;
+            
+            // Bind the lightbox trigger to your existing openLightbox function
+            img.onclick = function() {
+                if (typeof openLightbox === "function") {
+                    openLightbox(this.src);
+                } else {
+                    console.error("openLightbox function is not defined in script.js");
+                }
+            };
+            
+            // Inject the image into your gallery wrapper
+            galleryContainer.appendChild(img);
+        }
+    }
+});
