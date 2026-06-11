@@ -3,10 +3,10 @@ let autoScroll;
 let scrollAmount = 0;
 
 document.addEventListener("DOMContentLoaded", () => {
-  // 1. First, generate the images dynamically into the slider
+  // 1. Generate the images dynamically inside the slider wrapper first
   generateGalleryImages();
 
-  // 2. Now find the slider (which now has the images inside it!)
+  // 2. Initialize the slider features
   slider = document.getElementById("gallerySlider");
   if (!slider) return;
 
@@ -18,26 +18,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // --- DYNAMIC IMAGE GALLERY GENERATOR ---
 function generateGalleryImages() {
-  // Change this number whenever you upload new photos!
-  const totalImages = 9; 
+  // Change this number whenever you upload new photos to your folder!
+  const totalImages = 16; 
 
-  // We look for "gallerySlider" so it injects right into your slider carousel
   const galleryContainer = document.getElementById('gallerySlider');
 
   if (galleryContainer) {
     for (let i = 1; i <= totalImages; i++) {
       const img = document.createElement('img');
       img.src = `images/gallery${i}.jpeg`;
-      img.alt = `Gallery Image ${i}`;
+      img.alt = `Annamalayar Decors Gallery ${i}`;
       
-      // Fixed: Lightbox trigger
+      // Bind the click event to open the lightbox
       img.onclick = function() {
-        if (typeof openLightbox === "function") {
-          openLightbox(this.src);
-        } else {
-          // If your lightbox function is in another file, this will still trigger it
-          window.openLightbox ? window.openLightbox(this.src) : console.log("Lightbox function missing");
-        }
+        openLightbox(this.src);
       };
       
       galleryContainer.appendChild(img);
@@ -45,6 +39,7 @@ function generateGalleryImages() {
   }
 }
 
+// --- AUTO SCROLL LOGIC ---
 function startAutoScroll() {
   stopAutoScroll();
   autoScroll = setInterval(() => {
@@ -63,11 +58,30 @@ function stopAutoScroll() {
   if (autoScroll) clearInterval(autoScroll);
 }
 
-/* 🔥 THESE MUST BE GLOBAL */
-function scrollLeft() {
-  slider.scrollBy({ left: -300, behavior: "smooth" });
+// --- GLOBAL NAVIGATION ARROWS ---
+window.scrollLeft = function() {
+  if (slider) slider.scrollBy({ left: -300, behavior: "smooth" });
 }
 
-function scrollRight() {
-  slider.scrollBy({ left: 300, behavior: "smooth" });
+window.scrollRight = function() {
+  if (slider) slider.scrollBy({ left: 300, behavior: "smooth" });
+}
+
+// --- LIGHTBOX SHOW / HIDE LOGIC ---
+window.openLightbox = function(src) {
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightboxImg');
+  if (lightbox && lightboxImg) {
+    lightboxImg.src = src;
+    lightbox.classList.add('active'); // Adds an active class to show it
+    lightbox.style.display = "flex";  // Backup layout display toggle
+  }
+}
+
+window.closeLightbox = function() {
+  const lightbox = document.getElementById('lightbox');
+  if (lightbox) {
+    lightbox.classList.remove('active');
+    lightbox.style.display = "none";
+  }
 }
