@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // --- GENERATE IMAGES USING INNERHTML (BULLETPROOF METHOD) ---
 function generateGalleryImages() {
-  const totalImages = 9; // Change this number when adding images!
+  const totalImages = 16; // Change this number when adding images!
   const galleryContainer = document.getElementById('gallerySlider');
 
   if (galleryContainer) {
