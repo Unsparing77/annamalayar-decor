@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // --- DYNAMIC IMAGE GALLERY GENERATOR ---
 function generateGalleryImages() {
   // Change this number whenever you upload new photos to your folder!
-  const totalImages = 9; 
+  const totalImages = 16; 
 
   const galleryContainer = document.getElementById('gallerySlider');
 
